@@ -9,10 +9,6 @@ import csv
 
 
 class Name:
-
-    # def __init__(self, param):
-    #     self.param = param
-
     def __set_name__(self, owner, name):
         self._param_name = '_' + name
 
@@ -53,9 +49,6 @@ class Marks:
 
 
 class Subject:
-    # def __init__(self, min_mark: int, max_mark: int):
-    #     self.min_mark = min_mark
-    #     self.max_mark = max_mark
 
     def __set_name__(self, owner, name):
         self._param_name = '_' + name
@@ -81,36 +74,21 @@ class Student:
 
     first_name = Name()
     last_name = Name()
-    mark = Marks(2,5)        #TODO заменить переменными
+    mark = Marks(2,5)        
     test = Marks(0,100)
     subject = Subject()
-
-        
-    def __init__ (self, first_name, last_name, subject, mark, test):
+    
+    def __init__ (self, first_name, last_name):
         self.first_name = first_name
         self.last_name = last_name
-        self.subject = subject
-        self.test = mark
-        self.test = test
+        subject = None
+        mark = None
+        test = None
         self.common_dict = {}
 
     def __repr__(self):
-        return f'{self.first_name} {self.last_name} {self.subject} {self.test} {self.test}' 
+        return f'{self.first_name} {self.last_name}' 
     
-    # def set_mark(self,mark):
-    #     self.mark = mark
-
-    # def set_mark(self,subject,mark):
-    #     self.mark = mark
-    #     self.subject = subject
-    #     if self.subject not in self.common_dict:
-    #         self.common_dict.update({self.subject : {'Marks' : self.mark}})
-    #     elif type(self.common_dict[self.subject]['Marks'] ) == list:
-    #         self.common_dict[self.subject]['Marks'] .append(self.mark)
-    #     else:
-    #         self.common_dict[subject]['Marks'] = [self.common_dict[subject]['Marks'], self.mark]
-
-
     def set_mark(self,subject,mark):
         self.mark = mark
         self.subject = subject
@@ -132,14 +110,33 @@ class Student:
         else:
             self.common_dict[subject]['Tests'] = [self.test]
 
+    def test_average(self, subject):
+        res = 0
+        for key, value in self.common_dict.items():
+            if key == subject:
+                for k,v in value.items():
+                    if k == 'Tests':
+                        for i in range(len(v)):
+                            res += v[i]
+                        res /=len(v)
+                return res
 
+                
+    def marks_average(self):
+        res = 0
+        count=0
+        for key, value in self.common_dict.items():
+            # if key == subject:
+            for k,v in value.items():
+                if k == 'Marks':
+                    for i in range(len(v)):
+                        res += v[i]
+                        count+=1
+        res /=count
+        return res
 
 if __name__ == '__main__':
-    # st1 = Student('Вася', 'Петров')
-    # st1.subjects()
-    st1 = Student('Вася', 'Петров','Math',2,99)
-
-    print(st1)
+    st1 = Student('Вася', 'Петров')
     st1.set_tests('English', 50)
     st1.set_tests('Math', 58)
     st1.set_tests('Math', 44)
@@ -147,9 +144,14 @@ if __name__ == '__main__':
     st1.set_mark('Math', 4)
     st1.set_mark('Math', 5)
     st1.set_mark('Math', 3)
+    st1.set_tests('Literature',95)
     st1.set_mark('Math', 5)
     st1.set_mark('English', 5)
-    # st1.set_mark(4)
+    st1.set_mark('Literature',5)
+
     print(st1)
     print(st1.common_dict)
-    # print(st1.subjects())
+    print(f'Средний балл за тест составляет - {st1.test_average("Math")}')
+    print(f'Средний балл за тест составляет - {st1.test_average("English")}')
+    print(f'Средний балл за тест составляет - {st1.test_average("Literature")}')
+    print(f'Средний бал во всем дисциплинам - {st1.marks_average()}')
