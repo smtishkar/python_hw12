@@ -23,7 +23,8 @@ class Name:
         if value.isalpha() == False:
             raise ValueError(f'Значение {value} не должно содержать цыфр')
         if value.istitle() == False:
-            raise ValueError (f'Значение {value} должно начаинаться с заглавной буквы ')
+            raise ValueError(
+                f'Значение {value} должно начаинаться с заглавной буквы ')
 
 
 class Marks:
@@ -43,13 +44,10 @@ class Marks:
 
     def validate(self, value: int):
         if value < self.min_mark or value > self.max_mark:
-            raise ValueError (f'Отметки {value} не существует')  
-
-
+            raise ValueError(f'Отметки {value} не существует')
 
 
 class Subject:
-
     def __set_name__(self, owner, name):
         self._param_name = '_' + name
 
@@ -61,24 +59,24 @@ class Subject:
         setattr(instance, self._param_name, value)
 
     def validate(self, value: str):
-        subjects_list =[]
+        subjects_list = []
         with open('subjects.csv', 'r', encoding='utf-8', newline='') as f:
             csv_file = csv.reader(f)
             for line in csv_file:
-                subjects_list.append(''.join(line))  
+                subjects_list.append(''.join(line))
             if value not in subjects_list:
-                raise ValueError (f'Такого предмета {value} нет')
+                raise ValueError(f'Такого предмета {value} нет')
 
 
 class Student:
 
     first_name = Name()
     last_name = Name()
-    mark = Marks(2,5)        
-    test = Marks(0,100)
+    mark = Marks(2, 5)
+    test = Marks(0, 100)
     subject = Subject()
-    
-    def __init__ (self, first_name, last_name):
+
+    def __init__(self, first_name: str, last_name: str):
         self.first_name = first_name
         self.last_name = last_name
         subject = None
@@ -87,53 +85,55 @@ class Student:
         self.common_dict = {}
 
     def __repr__(self):
-        return f'{self.first_name} {self.last_name}' 
-    
-    def set_mark(self,subject,mark):
+        return f'{self.first_name} {self.last_name}'
+
+    def set_mark(self, subject: str, mark: int):
+        """функция вносит оценку по заданному предмету"""
         self.mark = mark
         self.subject = subject
         if self.subject not in self.common_dict:
-            self.common_dict.update({self.subject : {'Marks' : [self.mark]}})
+            self.common_dict.update({self.subject: {'Marks': [self.mark]}})
         elif 'Marks' in self.common_dict[subject]:
             self.common_dict[self.subject]['Marks'] .append(self.mark)
         else:
             self.common_dict[subject]['Marks'] = [self.mark]
 
-
-    def set_tests(self,subject,test):
+    def set_tests(self, subject: str, test: int):
+        """функция вносит оценку теста по заданному предмету"""
         self.test = test
         self.subject = subject
         if self.subject not in self.common_dict:
-            self.common_dict.update({self.subject : {'Tests' : [self.test]}})
+            self.common_dict.update({self.subject: {'Tests': [self.test]}})
         elif 'Tests' in self.common_dict[subject]:
             self.common_dict[self.subject]['Tests'] .append(self.test)
         else:
             self.common_dict[subject]['Tests'] = [self.test]
 
-    def test_average(self, subject):
+    def test_average(self, subject: str):
+        """функция считает среднее по заданному тесту"""
         res = 0
         for key, value in self.common_dict.items():
             if key == subject:
-                for k,v in value.items():
+                for k, v in value.items():
                     if k == 'Tests':
                         for i in range(len(v)):
                             res += v[i]
-                        res /=len(v)
+                        res /= len(v)
                 return res
 
-                
     def marks_average(self):
+        """функция считает среднюю оценку по всем предметам"""
         res = 0
-        count=0
+        count = 0
         for key, value in self.common_dict.items():
-            # if key == subject:
-            for k,v in value.items():
+            for k, v in value.items():
                 if k == 'Marks':
                     for i in range(len(v)):
                         res += v[i]
-                        count+=1
-        res /=count
+                        count += 1
+        res /= count
         return res
+
 
 if __name__ == '__main__':
     st1 = Student('Вася', 'Петров')
@@ -144,14 +144,14 @@ if __name__ == '__main__':
     st1.set_mark('Math', 4)
     st1.set_mark('Math', 5)
     st1.set_mark('Math', 3)
-    st1.set_tests('Literature',95)
+    st1.set_tests('Literature', 95)
     st1.set_mark('Math', 5)
     st1.set_mark('English', 5)
-    st1.set_mark('Literature',5)
+    st1.set_mark('Literature', 5)
 
     print(st1)
     print(st1.common_dict)
-    print(f'Средний балл за тест составляет - {st1.test_average("Math")}')
-    print(f'Средний балл за тест составляет - {st1.test_average("English")}')
-    print(f'Средний балл за тест составляет - {st1.test_average("Literature")}')
+    print(f'Средний балл за тест по Math составляет  - {st1.test_average("Math")}')
+    print(f'Средний балл за тест по English составляет - {st1.test_average("English")}')
+    print(f'Средний балл за тест по Literature составляет - {st1.test_average("Literature")}')
     print(f'Средний бал во всем дисциплинам - {st1.marks_average()}')
